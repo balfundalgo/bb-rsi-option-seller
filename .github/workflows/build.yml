@@ -1,0 +1,41 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Create default .env
+        run: |
+          echo "DHAN_CLIENT_ID=" > .env
+          echo "DHAN_PIN=" >> .env
+          echo "DHAN_TOTP_SECRET=" >> .env
+          echo "DHAN_ACCESS_TOKEN=" >> .env
+
+      - name: Build EXE
+        run: |
+          pyinstaller --onefile --windowed --name BB-RSI-Option-Seller --hidden-import customtkinter --collect-all customtkinter bb_rsi_seller.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BB-RSI-Option-Seller-Windows
+          path: dist/BB-RSI-Option-Seller.exe
