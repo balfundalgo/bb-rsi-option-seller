@@ -14,9 +14,11 @@ from typing import Dict, Optional, List, Tuple
 from pathlib import Path
 from collections import deque
 
-# Fix Windows console encoding
-sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+# Fix Windows console encoding (stdout/stderr are None in --windowed EXE)
+if sys.stdout is not None:
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if sys.stderr is not None:
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
 import requests, pyotp
 from dotenv import load_dotenv, set_key
